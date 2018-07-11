@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+	<title>Ethereum plugin</title>
+	<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css">
+</head>
+<body>
+    <!-- <script src="./webapp.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/gh/ethereum/web3.js/dist/web3.min.js"></script>
+    <script type="text/javascript"> 
+        var web3 = new Web3(new Web3.providers.HttpProvider("https://ropsten.infura.io"))
+
+        function getCurrentGasPrices() {
+            fetch('https://ethgasstation.info/json/ethgasAPI.json').then(response => {
+                return response.text()
+            }).then(data => {
+                data = JSON.parse(data)
+                document.getElementById("low-price").innerText = data.safeLow / 10 + " (transaction completes in < 30 minutes)"
+                document.getElementById("medium-price").innerText = data.average / 10 + " (transaction completes in < 5 minutes)"
+                document.getElementById("high-price").innerText = data.fast / 10 + " (transaction completes in < 2 minutes)"
+                setTimeout(getCurrentGasPrices, 5000)
+            })
+        }
+        getCurrentGasPrices()
+
+        async function getBalance(){
+            const addr = document.getElementById("address").value
+            const balanse_info = await web3.eth.getBalance(addr)
+            document.getElementById("balance").innerText = balanse_info/1000000000000000000 + " ethers"
+        }
+
+        
+    </script>
+	<div class="jumbotron text-center">
+        <div class="row">
+            <div id="profile-info" class="col-sm-6">
+                <div class="well">
+                    <h3><span class="fa fa-star"></span> Send transaction</h3>
+                    <div class="form-group">
+                        <label>Recipient address</label>
+                        <input type="text" class="form-control" name="to">
+                    </div>
+                    <div class="form-group">
+                        <label>Amount to send</label>
+                        <input class="form-control" name="amount">
+                    </div>
+                    <div class="form-group">
+                        <label>Private key</label>
+                        <input class="form-control" name="privKey">
+                    </div>
+                    <div class="form-group">
+                            <label>Gas price(fee)</label>
+                            <input class="form-control" name="gasprice">
+                        </div>
+                    <button class="btn btn-primary btn-sm" onclick="sendTransaction();"> Send transaction</button>
+                </div>
+            </div>
+            <div id="profile-info" class="col-sm-6">
+                <div class="well">
+                    <h3><span class="fa fa-gear"></span> See balance</h3>
+                    <div class="form-group">
+                        <label>Enter your address</label>
+                        <input id="address" type="text" class="form-control">
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="getBalance();"> Get balance</button> <br>
+                    <strong>Balance</strong> : <label id="balance"> </label> <br>
+                </div>
+            </div>
+            <div id="profile-info" class="col-sm-6">
+                <div class="well">
+                    <h3><span class="fa fa-glass"></span> Ethereum gas price</h3>
+                    <div class="form-group">
+                        <strong>Low</strong> : <label id="low-price"> </label> <br>
+                        <strong>Medium</strong> : <label id="medium-price"> </label> <br>
+                        <strong>High</strong> : <label id="high-price"> </label> <br>
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>
+</body>
+</html>
