@@ -69,7 +69,6 @@ module.exports = app => {
             })
 
         } catch(e){
-            console.log(e.message)
             logger.error(e.message)
             res.send({code: 1, data: e.message})
         }
@@ -84,7 +83,6 @@ module.exports = app => {
                 res.send({code: 0, data: result/1000000000000000000})
             })
         } catch(e){
-            console.log(e.message)
             logger.error(e.message)
             res.send({code: 1, data: e.message})
         }
@@ -96,7 +94,6 @@ module.exports = app => {
             keys = web3.eth.accounts.create()
             logger.info('Keys successfuly created ' + JSON.stringify(keys))
         } catch(e){
-            console.log(e.message)
             logger.error(e.message)
             res.send({code: 1, data: e.message})
         }
