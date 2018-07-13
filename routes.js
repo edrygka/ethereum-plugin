@@ -2,22 +2,23 @@ const Web3 = require('web3')
 const EthereumTx = require('ethereumjs-tx')
 const axios = require('axios')
 const logger = require('./logger')
+const config = require('./config/config.js')
 
-const web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io'))
+const web3 = new Web3(new Web3.providers.HttpProvider(config.urlProvider))
 
 const getCurrentGasPrices = () => {
     return new Promise((res, rej) => {
-      axios.get('https://ethgasstation.info/json/ethgasAPI.json').then(response => {
-        const prices = {
-          low: response.data.safeLow / 10,
-          medium: response.data.average / 10,
-          high: response.data.fast / 10
-        }
-        logger.info('Successfuly get gas price')
-        res(prices)
-      }).catch(err => rej(err))
+        axios.get(config.urlGasPrice).then(response => {
+            const prices = {
+                low: response.data.safeLow / 10,
+                medium: response.data.average / 10,
+                high: response.data.fast / 10
+            }
+            logger.info('Successfuly get gas price')
+            res(prices)
+        }).catch(err => rej(err))
     })
-  }
+}
 
 module.exports = app => {
     app.post('/sendTransaction', async (req, res) => {
