@@ -1,18 +1,23 @@
 const Web3 = require('web3')
 const EthereumTx = require('ethereumjs-tx')
 const axios = require('axios')
+const Winston = require('winston')
 
 const web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io'))
 
-// const getCurrentGasPrices = async () => {
-//     let response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json')
-//     let prices = {
-//       low: response.data.safeLow / 10,
-//       medium: response.data.average / 10,
-//       high: response.data.fast / 10
-//     }
-//     return prices
-// }
+const logger = Winston.createLogger({
+    level: 'verbose',
+    transports: [
+        new Winston.transports.Console({
+            timestamp: true
+        }),
+        new Winston.transports.File({
+            filename: 'api.log',
+            timestamp: true
+        })
+    ]
+})
+logger.info("Server with api listening on port " + 3000)
 
 const getCurrentGasPrices = () => {
     return new Promise((res, rej) => {
@@ -22,6 +27,7 @@ const getCurrentGasPrices = () => {
           medium: response.data.average / 10,
           high: response.data.fast / 10
         }
+        logger.info('Successfuly get gas price')
         res(prices)
       }).catch(err => rej(err))
     })
@@ -58,11 +64,13 @@ module.exports = app => {
 
             web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'), (err, result) => {
                 if(err) throw err
+                logger.info('Transaction successfuly performed ' + result)
                 res.send({code: 0, data: result})
             })
 
         } catch(e){
             console.log(e.message)
+            logger.error(e.message)
             res.send({code: 1, data: e.message})
         }
     })
@@ -72,16 +80,27 @@ module.exports = app => {
         try{
             web3.eth.getBalance(address, null, (err, result) => {
                 if(err) throw err
+                logger.info('Get balance operation successfuly performed')
                 res.send({code: 0, data: result/1000000000000000000})
             })
         } catch(e){
             console.log(e.message)
+            logger.error(e.message)
             res.send({code: 1, data: e.message})
         }
     })
+
+    app.get('/createKeys', (req, res) => {
+        let keys
+        try{
+            keys = web3.eth.accounts.create()
+            logger.info('Keys successfuly created ' + JSON.stringify(keys))
+        } catch(e){
+            console.log(e.message)
+            logger.error(e.message)
+            res.send({code: 1, data: e.message})
+        }
+        res.send({code: 0, data: keys})
+    })
 }
-  
-//   const addr = "0x142BC8c8996dc2D2b579fAb4522CEf0928DB35cE"
-//   const privKey = "0cf6da84e1b3219775dab09b5751b28478afad15fabdb7ab7495abd81c4f06f6"
-//   const recipient = "0xb1ecd2b698565f2efbea025f64f388fa30402e1d"
   
