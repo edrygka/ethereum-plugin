@@ -1,23 +1,9 @@
 const Web3 = require('web3')
 const EthereumTx = require('ethereumjs-tx')
 const axios = require('axios')
-const Winston = require('winston')
+const logger = require('./logger')
 
 const web3 = new Web3(new Web3.providers.HttpProvider('https://ropsten.infura.io'))
-
-const logger = Winston.createLogger({
-    level: 'verbose',
-    transports: [
-        new Winston.transports.Console({
-            timestamp: true
-        }),
-        new Winston.transports.File({
-            filename: 'api.log',
-            timestamp: true
-        })
-    ]
-})
-logger.info("Server with api listening on port " + 3000)
 
 const getCurrentGasPrices = () => {
     return new Promise((res, rej) => {
