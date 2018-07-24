@@ -21,11 +21,10 @@ const getCurrentGasPrices = () => {
 }
 
 module.exports = app => {
-    app.post('/sendTransaction', async (req, res) => {
-
+    app.post('/sendTransaction', async (req, res, next) => {
         const sender = req.body.from
         const privKey = req.body.privKey
-        const reciver = req.body.to
+        const reciver = req.body.reciver
         const amount = req.body.amount
 
         //const gasPrice = req.body.gasPrice
@@ -86,5 +85,9 @@ module.exports = app => {
         }
         res.send({code: 0, data: keys})
     })
+
+    // app.get('/wallet', (req, res) => {
+    //     res.sendFile('client/wallet.html', {root: __dirname })
+    // })
 }
   
