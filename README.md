@@ -15,3 +15,6 @@ To change port or other urls, go to config folder and change config.js file
 
 3) createKeys
     to get key pair send get request to "http://127.0.0.1:3000/createKeys" will return you object contains address and private key
+
+4) wallet interface
+    got to "http://127.0.0.1:3000/wallet" and you will see interface of wallet all functionality etc

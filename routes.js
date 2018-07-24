@@ -86,8 +86,8 @@ module.exports = app => {
         res.send({code: 0, data: keys})
     })
 
-    // app.get('/wallet', (req, res) => {
-    //     res.sendFile('client/wallet.html', {root: __dirname })
-    // })
+    app.get('/wallet', (req, res) => {
+        res.sendFile('client/wallet.html', {root: __dirname })
+    })
 }
   
