@@ -26,21 +26,18 @@ module.exports = app => {
         const privKey = req.body.privKey
         const reciver = req.body.reciver
         const amount = req.body.amount
-
-        //const gasPrice = req.body.gasPrice
-        //getCurrentGasPrices().then(res => console.log(res)).catch(err => console.log(err.message))
-        try{
-            const gasPrices = await getCurrentGasPrices()
-            const nonce = await web3.eth.getTransactionCount(sender)
-
-            const details = {
-                "to": reciver,
-                "value": web3.utils.toHex(web3.utils.toWei(amount, 'ether') ),
-                "gas": 21000,
-                "gasPrice": gasPrices.low * 1000000000, // converts the gwei price to wei(*10^9)
-                "nonce": nonce,
-                "chainId": 3 // EIP 155 chainId - mainnet: 1, rinkeby: 4, ropsten: 3, morden: 2
-            }
+        const gasprice = req.body.gasprice
+        const nonce = req.body.nonce
+        const details = {
+            "to": reciver,
+            "value": web3.utils.toHex(web3.utils.toWei(amount, 'ether') ),
+            "gas": 21000,
+            "gasPrice": gasprice * 1000000000, // converts the gwei price to wei(*10^9)
+            "nonce": nonce,
+            "chainId": 3 // EIP 155 chainId - mainnet: 1, rinkeby: 4, ropsten: 3, morden: 2
+        }
+        
+        try {
 
             const transaction = new EthereumTx(details)
 
