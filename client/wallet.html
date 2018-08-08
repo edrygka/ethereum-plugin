@@ -28,8 +28,17 @@
 
     async function getBalance(){
         const addr = document.getElementById("address").value
-        const balanse_info = await web3.eth.getBalance(addr)
-        document.getElementById("balance").innerText = balanse_info/1000000000000000000 + " ethers"
+        const url = 'http://localhost:3000/getBalance?address=' + addr.toString()
+        fetch(url, {headers:{'Access-Control-Allow-Origin':'*'}}).then(response => {
+            response.text().then(data => {
+                data = JSON.parse(data)
+                if(data.code == 0){
+                    document.getElementById("balance").innerText = data.data+ " ethers"
+                }else {
+                    document.getElementById("balance").innerText = data.data
+                }
+            })
+        })
     }
 
     async function sendTransaction(){
@@ -39,20 +48,19 @@
         const amount = document.getElementById("amount").value
         const fee = document.getElementById("gasprice").value
         const nonce = await web3.eth.getTransactionCount(sender)
-        console.log(nonce)
 
-        let data = {from: sender, privKey: privKey, reciver: to, amount: amount, gasprice: fee, nonce: nonce}
+        let data = {privKey: privKey, reciver: to, amount: amount, gasprice: fee, nonce: nonce}
         data = Object.keys(data).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key])).join('&')
         fetch('http://localhost:3000/sendTransaction', {mode: "no-cors",method: "POST",headers: {
             'Content-Type':'application/x-www-form-urlencoded'
         }, body: data}).then(response => {
-            response.text().then(data => {
+            response.text().then(data => { 
                 data = JSON.parse(data)
                 var div = document.createElement("div")
                 if(data.code == 0){
                     div.innerHTML = `<div class="alert alert-success">Transaction send to Ethereum blockchain without errors \n https://ropsten.etherscan.io/tx/${data.data}</div>`
                 } else {
-                    div.innerHTML = '<div class="alert alert-danger">Transaction did not send to Ethereum blockchain (something going wrong)</div>'
+                    div.innerHTML = '<div class="alert alert-danger">' + data.data + '</div>'
                 }
                 document.body.appendChild(div)
             })
@@ -66,19 +74,19 @@
                     <h3><span class="fa fa-star"></span> Send transaction</h3>
                     <div class="form-group">
                         <label>Sender address</label>
-                        <input type="text" class="form-control" id="sender" value="0x142BC8c8996dc2D2b579fAb4522CEf0928DB35cE">
+                        <input type="text" class="form-control" id="sender" value="0xb1EcD2B698565F2EFBeA025f64F388FA30402e1d">
                     </div>
                     <div class="form-group">
                         <label>Private key</label>
-                        <input type="text" class="form-control" id="privKey" value="0cf6da84e1b3219775dab09b5751b28478afad15fabdb7ab7495abd81c4f06f6">
+                        <input type="text" class="form-control" id="privKey" value="0ab8df9b449b71ae6ae2f4c55cad63c6f2009d1d56bed64c2275e347a8a219d9">
                     </div>
                     <div class="form-group">
                         <label>Recipient address</label>
-                        <input type="text" class="form-control" id="to" value="0xb1ecd2b698565f2efbea025f64f388fa30402e1d">
+                        <input type="text" class="form-control" id="to" value="0x142BC8c8996dc2D2b579fAb4522CEf0928DB35cE">
                     </div>
                     <div class="form-group">
                         <label>Amount to send</label>
-                        <input class="form-control" id="amount" value="0.002">
+                        <input class="form-control" id="amount" value="0.0002">
                     </div>
                     <div class="form-group">
                         <label>Gas price(fee)</label>
