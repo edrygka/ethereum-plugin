@@ -30,7 +30,7 @@ module.exports = app => {
 
         const details = {
             "to": reciver,
-            "value": amount * 10e18,
+            "value": amount * 10e17,
             "gas": 21000,
             "gasPrice": gasprice * 10e9, // converts the gwei price to wei(*10^9)
             "nonce": nonce,
