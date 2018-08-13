@@ -6,24 +6,11 @@ const config = require('./config/config.js')
 
 const web3 = new Web3(new Web3.providers.HttpProvider(config.urlProvider))
 
-const getCurrentGasPrices = () => {
-    return new Promise((res, rej) => {
-        axios.get(config.urlGasPrice).then(response => {
-            const prices = {
-                low: response.data.safeLow / 10,
-                medium: response.data.average / 10,
-                high: response.data.fast / 10
-            }
-            logger.info('Successfuly get gas price')
-            res(prices)
-        }).catch(err => rej(err))
-    })
-}
 
 module.exports = app => {
     app.post('/sendTransaction', (req, res, next) => {
-        const privKey = req.body.privKey
-        const reciver = req.body.reciver
+        const privKey = String(req.body.privKey)
+        const reciver = String(req.body.reciver)
         const amount = Number(req.body.amount)
         const gasprice = Number(req.body.gasprice)
         const nonce = Number(req.body.nonce)
@@ -60,12 +47,11 @@ module.exports = app => {
             logger.error(e.message)
             next(e)
         }
-        
     })
 
-    app.post('/sendTransaction', (err, req, res) => { 
+    app.post('/sendTransaction', (err, req, res, next) => { 
         console.log("Hello ======================== " + err)
-        res.send({code: 1, data: err.message})
+        //res.send({code: 1, data: err.message})
     })
 
     app.get('/getBalance', (req, res) => {
@@ -73,8 +59,9 @@ module.exports = app => {
         try{
             web3.eth.getBalance(address, null, (err, result) => {
                 if(err) throw err
-                logger.info('Get balance operation successfuly performed')
-                res.send({code: 0, data: result/1000000000000000000})
+                const balance = result/1000000000000000000
+                logger.info('Get balance operation successfuly performed, balance = ' + balance + ' ethers')
+                res.send({code: 0, data: balance})
             })
         } catch(e){
             logger.error(e.message)
