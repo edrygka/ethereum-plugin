@@ -61,7 +61,7 @@ module.exports = app => {
             return res.send({code: 0, data: balance})
         })
     }, (err, req, res) => {
-        res.send({code: 1, data: e.message})
+        res.send({code: 1, data: err.message})
     })
 
     app.get('/createKeys', (req, res) => {
