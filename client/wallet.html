@@ -51,8 +51,8 @@
 
         let data = {privKey: privKey, reciver: to, amount: amount, gasprice: fee, nonce: nonce}
         data = Object.keys(data).map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key])).join('&')
-        fetch('http://localhost:3000/sendTransaction', {mode: "no-cors",method: "POST",headers: {
-            'Content-Type':'application/x-www-form-urlencoded'
+        fetch('http://localhost:3000/sendTransaction', {mode: "cors",method: "POST",headers: {
+            'Content-Type':'application/x-www-form-urlencoded', 'Access-Control-Allow-Origin':'*'
         }, body: data}).then(response => {
             response.text().then(data => { 
                 data = JSON.parse(data)
