@@ -44,7 +44,7 @@ module.exports = app => {
             next(e.message)
         }
     }, (err, req, res) => {
-        logger.error(e.message)
+        logger.error(err)
         res.send({code: 1, data: err})
     })
 
@@ -53,15 +53,15 @@ module.exports = app => {
         const address = req.query["address"]
         web3.eth.getBalance(address, null, (err, result) => {
             if(err) {
-                logger.error(e.message)
-                return next(err)
+                logger.error(err.message)
+                return next(err.message)
             } 
             const balance = result/1000000000000000000
             logger.info('Get balance operation successfuly performed, balance = ' + balance + ' ethers')
             return res.send({code: 0, data: balance})
         })
     }, (err, req, res) => {
-        res.send({code: 1, data: err.message})
+        res.send({code: 1, data: err})
     })
 
     app.get('/createKeys', (req, res) => {
@@ -69,15 +69,14 @@ module.exports = app => {
         try{
             keys = web3.eth.accounts.create()
             logger.info('Keys successfuly created ' + JSON.stringify(keys))
+            res.send({code: 0, data: keys})
         } catch(e){
             logger.error(e.message)
             res.send({code: 1, data: e.message})
         }
-        res.send({code: 0, data: keys})
     })
 
     app.get('/wallet', (req, res) => {
         res.sendFile('client/wallet.html', {root: __dirname })
     })
 }
-  
