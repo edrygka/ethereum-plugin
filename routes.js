@@ -35,38 +35,33 @@ module.exports = app => {
             })
             .on('confirmation', result => {
                 logger.info('Transaction has already ' + result + ' confirmations')
-                // if(result == 5){
-                //     res.send({code: 0, data: "Transaction has already " + result + " confirmations"})
-                // }
             })
             // TODO: Error handler 
             .on('error', error => {
-                next(error)
+                next(error.message)
             })
         } catch(e){
-            logger.error(e.message)
-            next(e)
+            next(e.message)
         }
+    }, (err, req, res) => {
+        logger.error(e.message)
+        res.send({code: 1, data: err})
     })
 
-    app.post('/sendTransaction', (err, req, res, next) => { 
-        console.log("Hello ======================== " + err)
-        //res.send({code: 1, data: err.message})
-    })
 
-    app.get('/getBalance', (req, res) => {
+    app.get('/getBalance', (req, res, next) => {
         const address = req.query["address"]
-        try{
-            web3.eth.getBalance(address, null, (err, result) => {
-                if(err) throw err
-                const balance = result/1000000000000000000
-                logger.info('Get balance operation successfuly performed, balance = ' + balance + ' ethers')
-                res.send({code: 0, data: balance})
-            })
-        } catch(e){
-            logger.error(e.message)
-            res.send({code: 1, data: e.message})
-        }
+        web3.eth.getBalance(address, null, (err, result) => {
+            if(err) {
+                logger.error(e.message)
+                return next(err)
+            } 
+            const balance = result/1000000000000000000
+            logger.info('Get balance operation successfuly performed, balance = ' + balance + ' ethers')
+            return res.send({code: 0, data: balance})
+        })
+    }, (err, req, res) => {
+        res.send({code: 1, data: e.message})
     })
 
     app.get('/createKeys', (req, res) => {
